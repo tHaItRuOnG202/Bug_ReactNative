@@ -1,58 +1,49 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { NativeRouter, Route, Routes } from 'react-router-native';
-import Register from './components/Register';
-import { NativeBaseProvider } from 'native-base';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Home from './components/Home';
-import { FontAwesome5 } from '@expo/vector-icons';
-import MainScreen from './components/MainScreen';
-import { useReducer } from 'react';
+import React, { createContext, useReducer } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { NativeRouter } from 'react-router-native';
+import MyUserReducer from "./src/reducers/MyUserReducer";
+import Login from './src/components/Login';
+import Register from './src/components/Register';
+import MainScreen from './src/screen/MainScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import MyUserReducer from "./reducers/MyUserReducer";
-import { createContext } from 'react';
-import Login from './components/Login';
+import Profile from './src/components/Profile';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import StatusPost from './src/layouts/StatusPost';
+import Comment from './src/layouts/Comment';
+import Post from './src/layouts/Post';
+import AccountManagement from './src/layouts/AccountManagement';
+import GroupManagement from './src/layouts/GroupManagement';
+import GroupMember from './src/layouts/GroupMember';
+import GroupEdit from './src/layouts/GroupEdit';
+import InvitationPost from './src/layouts/InvitationPost';
+import SurveyPost from './src/layouts/SurveyPost';
+import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
+import SurveyForm from './src/layouts/SurveyForm';
 
 export const MyUserContext = createContext();
 
 const Stack = createNativeStackNavigator();
 
-// export default function App() {
-//   return (
-//     <NativeRouter>
-//       <NativeBaseProvider>
-//         <NavigationContainer>
-//           <View style={styles.container}>
-//             <Routes>
-//               <Route exact path='/' element={<Login />} />
-//               <Route path='/register' element={<Register />} />
-//             </Routes>
-//           </View>
-//         </NavigationContainer>
-//       </NativeBaseProvider>
-//     </NativeRouter>
-//   );
-// }
-
 export default function App() {
   const [user, dispatch] = useReducer(MyUserReducer, AsyncStorage.getItem("user") || null)
   return (
     <MyUserContext.Provider value={[user, dispatch]}>
-      <NativeBaseProvider>
+      <AutocompleteDropdownContextProvider>
         <NativeRouter>
           <NavigationContainer>
             <Stack.Navigator>
               <Stack.Screen name="Đăng nhập" component={Login} />
-              <Stack.Screen name="Trang chủ" component={MainScreen} options={{ headerShown: false }} />
               <Stack.Screen name="Đăng ký" component={Register} />
+              <Stack.Screen name="Trang chủ" component={MainScreen} options={{ headerShown: false }} />
               <Stack.Screen
-                name="IMPROOK SOCIAL"
-                component={Home}
+                name="Trang cá nhân"
+                component={Profile}
                 options={{
                   headerTitleAlign: 'center',
                   headerTitleStyle: {
-                    color: '#2e64e5',
+                    color: 'black',
                     fontSize: 18,
                   },
                   headerStyle: {
@@ -62,19 +53,29 @@ export default function App() {
                   headerRight: () => (
                     <View style={{ marginRight: 10 }}>
                       <FontAwesome5.Button
-                        name="plus"
-                        size={22}
+                        name="search"
+                        size={20}
                         backgroundColor="#fff"
-                        color="#2e64e5"
+                        color="black"
                       />
                     </View>
                   ),
                 }}
               />
+              <Stack.Screen name="Post" component={Post} />
+              <Stack.Screen name="Bài đăng" component={StatusPost} />
+              <Stack.Screen name="Bình luận" component={Comment} />
+              <Stack.Screen name="Quản lý tài khoản" component={AccountManagement} />
+              <Stack.Screen name="Quản lý nhóm" component={GroupManagement} />
+              <Stack.Screen name="Thành viên nhóm" component={GroupMember} />
+              <Stack.Screen name="Chỉnh sửa nhóm" component={GroupEdit} />
+              <Stack.Screen name="Tạo sự kiện" component={InvitationPost} />
+              <Stack.Screen name="Tạo khảo sát" component={SurveyPost} />
+              <Stack.Screen name="Tạo đơn khảo sát" component={SurveyForm} />
             </Stack.Navigator>
           </NavigationContainer>
         </NativeRouter>
-      </NativeBaseProvider>
+      </AutocompleteDropdownContextProvider>
     </MyUserContext.Provider>
   );
 }
